@@ -4,8 +4,8 @@
   "description": "This is a backend of tinder for developers.",
   "main": "index.js",
   "scripts": {
-    "start":"node src/app.js",
-    "dev":"nodemon src/app.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "keywords": [
     "javascript",
@@ -16,6 +16,7 @@
   "author": "Nitesh Kumar Jha",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "mongoose": "^8.6.3"
   }
 }
