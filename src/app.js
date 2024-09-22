@@ -61,31 +61,31 @@ app.delete("/user", async (req, res) => {
 });
 
 //api for updating an existing user document
-// app.patch("/user", async (req, res) => {
-//   const userId = req.body.kuchbhi;
-//   const data = req.body;
-
-//   try {
-//     // console.log(userId);
-//     await User.findByIdAndUpdate(userId, data);
-//     res.send("User updated sucessfully");
-//   } catch (err) {
-//     res.status(404).send("something went wrong" + err);
-//   }
-// });
-
-// api for finding the user by email and update
-
 app.patch("/user", async (req, res) => {
-  const email = req.body.emailId;
+  const userId = req.body.id;
   const data = req.body;
+
   try {
-    await User.findOneAndUpdate({ emailId: email }, { ...data });
-    res.send("user Updated sucessfully");
+    // console.log(userId);
+    await User.findByIdAndUpdate(userId, { ...data }, { runValidators: true });
+    res.send("User updated sucessfully");
   } catch (err) {
     res.status(404).send("something went wrong" + err);
   }
 });
+
+// api for finding the user by email and update
+
+// app.patch("/user", async (req, res) => {
+//   const email = req.body.emailId;
+//   const data = req.body;
+//   try {
+//     await User.findOneAndUpdate({ emailId: email }, { ...data });
+//     res.send("user Updated sucessfully");
+//   } catch (err) {
+//     res.status(404).send("something went wrong" + err);
+//   }
+// });
 
 // database connection
 connectDb()
