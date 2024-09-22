@@ -27,7 +27,7 @@ app.get("/user", async (req, res) => {
 
   try {
     // console.log(email);
-    // dont forget to select schema or model that you want to use for filtering this query
+    // dont forget to select model=>User that you want to use for filtering this query
     const user = await User.find({ emailId: email });
     if (user.length === 0) {
       res.status(404).send("user with emailId not found");
@@ -47,6 +47,43 @@ app.get("/feed", async (req, res) => {
     res.send(users);
   } catch (err) {
     res.status(404).send("something went wrong..!!");
+  }
+});
+// api for deleting user from a collection
+app.delete("/user", async (req, res) => {
+  const id = req.body.id;
+  try {
+    await User.findByIdAndDelete(id);
+    res.send("user deleted sucessfully");
+  } catch (err) {
+    res.status(404).send("something went wrong" + err);
+  }
+});
+
+//api for updating an existing user document
+// app.patch("/user", async (req, res) => {
+//   const userId = req.body.kuchbhi;
+//   const data = req.body;
+
+//   try {
+//     // console.log(userId);
+//     await User.findByIdAndUpdate(userId, data);
+//     res.send("User updated sucessfully");
+//   } catch (err) {
+//     res.status(404).send("something went wrong" + err);
+//   }
+// });
+
+// api for finding the user by email and update
+
+app.patch("/user", async (req, res) => {
+  const email = req.body.emailId;
+  const data = req.body;
+  try {
+    await User.findOneAndUpdate({ emailId: email }, { ...data });
+    res.send("user Updated sucessfully");
+  } catch (err) {
+    res.status(404).send("something went wrong" + err);
   }
 });
 
