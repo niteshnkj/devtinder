@@ -11,6 +11,10 @@ app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
+  // write validations before starting  encrypting passwords episode
+  /**
+   *  4 fields are required
+   */
   try {
     await user.save();
     res.send("user Saved sucessfully");

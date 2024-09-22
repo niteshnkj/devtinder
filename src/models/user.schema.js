@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,11 +20,21 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       toLowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("write an appropriate email");
+        }
+      },
     },
     password: {
       type: String,
       required: true,
-      minLenght: 8,
+
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("write a strong password");
+        }
+      },
     },
     age: {
       type: String,
@@ -41,6 +52,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://previews.123rf.com/images/triken/triken1608/triken160800029/61320775-male-avatar-profile-picture-default-user-avatar-guest-avatar-simply-human-head-vector-illustration.jpg",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("provide an url for profile photo");
+        }
+      },
     },
     about: {
       type: String,
