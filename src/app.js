@@ -61,13 +61,37 @@ app.delete("/user", async (req, res) => {
 });
 
 //api for updating an existing user document
-app.patch("/user", async (req, res) => {
-  const userId = req.body.id;
+
+app.patch("/user/:id", async (req, res) => {
+  // to acess dynamic id as param
+  const userId = req?.params.id;
   const data = req.body;
 
   try {
+    // writing validations on api level for skills and email and empty field
+    const ALLOWED_UPDATES = [
+      "userId",
+      "photoUrl",
+      "about",
+      "gender",
+      "age",
+      "skills",
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
+    if (data?.skills.length > 10) {
+      throw new Error("Skills cannot be more than 10");
+    }
+
     // console.log(userId);
-    await User.findByIdAndUpdate(userId, { ...data }, { runValidators: true });
+    await User.findByIdAndUpdate({ _id: userId }, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
     res.send("User updated sucessfully");
   } catch (err) {
     res.status(404).send("something went wrong" + err);
