@@ -1,7 +1,9 @@
 const express = require("express");
 const { connectDb } = require("./config/database");
 const User = require("./models/user.schema");
+const { validateSignUpData } = require("./utils/validation");
 const app = express();
+const bcrypt = require("bcrypt");
 
 //adding express.json() middleware to app level so that if json comes from anywhere it will convert that to js object
 
@@ -10,12 +12,23 @@ app.use(express.json());
 //saving dummy data to database for user schema
 
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-  // write validations before starting  encrypting passwords episode
-  /**
-   *  4 fields are required
-   */
   try {
+    //validate incoming requests
+    validateSignUpData(req);
+
+    const { firstName, lastName, emailId, password } = req.body;
+    //encrypt passwords using bcrypt
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    //and ideal way to deciede hash rounds is 10 you can give any
+    //the number of round we increase our password will get more stronger but it takes time for hashing
+    //for creating an instance of user never ever ttrus req.body always pass required fields as object
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
     await user.save();
     res.send("user Saved sucessfully");
   } catch (error) {
@@ -23,6 +36,8 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("bad request");
   }
 });
+
+//create a login api
 
 // reading dummy data from the database
 //finding an user with email
