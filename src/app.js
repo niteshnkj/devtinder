@@ -38,7 +38,29 @@ app.post("/signup", async (req, res) => {
 });
 
 //create a login api
-
+app.post("/login", async (req, res) => {
+  try {
+    //request email and password from req.body
+    const { emailId, password } = req.body;
+    //match email with collection from database
+    const user = await User.findOne({ emailId });
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      res.send("Login sucessfull");
+    } else {
+      //never throw exact error for user else attacker can check for specific email or password
+      // never explicitly write extra informations or never expose your db.111
+      //this is known as information leaking 
+      throw new Error("Invalid credentials");
+    }
+  } catch (error) {
+    console.log("error while Login" + error.message);
+    res.status(400).send("bad request");
+  }
+});
 // reading dummy data from the database
 //finding an user with email
 app.get("/user", async (req, res) => {
