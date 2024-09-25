@@ -59,9 +59,11 @@ app.post("/login", async (req, res) => {
         "DEVtinder$435",
         { expiresIn: "1d" }
       );
-      console.log(generatejwtToken);
+      // console.log(generatejwtToken);
       // wrap jwt inside a cookie and send it
-      res.cookie("token", generatejwtToken);
+      res.cookie("token", generatejwtToken, {
+        expires: new Date(Date.now() + 900000),
+      });
 
       res.send("Login sucessfull");
     } else {
@@ -81,6 +83,16 @@ app.get("/profile", userAuth, async (req, res) => {
     const user = req.user;
     res.send(user);
     // res.send("welcome user");
+  } catch (err) {
+    console.log("Error: " + err.message);
+    res.status(400).send("bad request");
+  }
+});
+
+app.post("/sendConnectionRequest", userAuth, (req, res) => {
+  try {
+    const user = req.user;
+    res.send("Got a new connection request from: " + user.firstName);
   } catch (err) {
     console.log("Error: " + err.message);
     res.status(400).send("bad request");
