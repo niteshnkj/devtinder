@@ -4,10 +4,13 @@ const User = require("./models/user.schema");
 const { validateSignUpData } = require("./utils/validation");
 const app = express();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+var cookieParser = require("cookie-parser");
 
 //adding express.json() middleware to app level so that if json comes from anywhere it will convert that to js object
 
 app.use(express.json());
+app.use(cookieParser());
 
 //saving dummy data to database for user schema
 
@@ -49,11 +52,20 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
+      //create a jwt token
+      const generatejwtToken = await jwt.sign(
+        { _id: user._id },
+        "DEVtinder$435"
+      );
+      console.log(generatejwtToken);
+      // wrap jwt inside a cookie and send it
+      res.cookie("token", generatejwtToken);
+
       res.send("Login sucessfull");
     } else {
       //never throw exact error for user else attacker can check for specific email or password
       // never explicitly write extra informations or never expose your db.111
-      //this is known as information leaking 
+      //this is known as information leaking
       throw new Error("Invalid credentials");
     }
   } catch (error) {
@@ -61,6 +73,35 @@ app.post("/login", async (req, res) => {
     res.status(400).send("bad request");
   }
 });
+//create an api to view user profile
+app.get("/profile", async (req, res) => {
+  try {
+    //get cookies from req.cookie
+    const cookies = req.cookies;
+    //extract token from cookie
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+    // console.log(token)
+    //verify signature with jwt
+    const decodedMessage = await jwt.verify(token, "DEVtinder$435");
+    console.log(decodedMessage);
+    //extract hidden id from decoded message
+    const { _id } = decodedMessage;
+    //sent profile details as response
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+    res.send(user);
+    // res.send("welcome user");
+  } catch (error) {
+    console.log("error fetching profile details " + error.message);
+    res.status(400).send("bad request");
+  }
+});
+
 // reading dummy data from the database
 //finding an user with email
 app.get("/user", async (req, res) => {
