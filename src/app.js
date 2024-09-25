@@ -51,15 +51,13 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    //using schema methods for validating password and signing jwt tokens
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       //create a jwt token
-      const generatejwtToken = await jwt.sign(
-        { _id: user._id },
-        "DEVtinder$435",
-        { expiresIn: "1d" }
-      );
-      // console.log(generatejwtToken);
+      const generatejwtToken = await user.getJwt();
+
+      console.log(generatejwtToken);
       // wrap jwt inside a cookie and send it
       res.cookie("token", generatejwtToken, {
         expires: new Date(Date.now() + 900000),
