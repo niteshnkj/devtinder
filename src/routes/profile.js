@@ -32,5 +32,15 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     res.status(400).send("ERROR : " + err.message);
   }
 });
-// todo /profile/password
+// todo patch/profile/password -> forgot password api
+/**
+ * check if user is loggedin or not
+ * if loggedIn
+ * take existing password 
+ * validate and compare existing pasword 
+ * if validated take new password
+ * match new pasword with confirm password field
+ * encypt pasword
+ * send a response with success code
+ */
 module.exports = profileRouter;
