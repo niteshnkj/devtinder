@@ -16,6 +16,7 @@ requestRouter.post(
       const allowedStatus = ["ignored", "interested"];
       if (!allowedStatus.includes(status)) {
         res.status(400).json({ message: "Invalid status type: " + status });
+        return;
       }
       //check for random user if there is no registered user in db then dont allow send connection to any random user
       const toUser = await User.findById(toUserId);
@@ -66,7 +67,7 @@ requestRouter.post(
       // if user is loggedin check for incoming status is valid or not
       const { status, requestId } = req.params;
 
-      const allowedStatus = ["accepted", "ignored"];
+      const allowedStatus = ["accepted", "rejected"];
       if (!allowedStatus.includes(status)) {
         return res.status(400).json({ messaage: "Status not allowed!" });
       }
