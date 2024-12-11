@@ -3,6 +3,7 @@ const userRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
+
 const SAFE_USER_DATA = "firstName lastName photoUrl age gender about skills";
 //get all pending connection requests from the loggedIn user.
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -59,4 +60,29 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    //find all the connection request that are present in logged in user
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser }, { toUserId: loggedInUser }],
+    }).select("fromUserId  toUserId");
+    //filter unique ids of connection requests that are present for current user
+    const hideUserData = new Set();
+    connectionRequest.forEach((req) => {
+      hideUserData.add(req.fromUserId.toString());
+      hideUserData.add(req.toUserId.toString());
+    });
+    //exclude all the connections that are already present for logged in user in thier requests and send rest of the data
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUserData) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(SAFE_USER_DATA);
+    res.json({ data: users });
+  } catch (error) {
+    res.send(error.message);
+  }
+});
 module.exports = userRouter;
