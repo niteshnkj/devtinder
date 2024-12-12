@@ -1,11 +1,12 @@
 const express = require("express");
 const { connectDb } = require("./config/database");
 const app = express();
+const cors = require("cors");
 
 var cookieParser = require("cookie-parser");
 
 //adding express.json() middleware to app level so that if json comes from anywhere it will convert that to js object
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
