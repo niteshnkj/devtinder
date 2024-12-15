@@ -55,7 +55,7 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 900000),
       });
 
-      res.send("Login sucessfull");
+      res.send(user);
     } else {
       //never throw exact error for user else attacker can check for specific email or password
       // never explicitly write extra informations or never expose your db.111
@@ -63,8 +63,8 @@ authRouter.post("/login", async (req, res) => {
       throw new Error("Invalid credentials");
     }
   } catch (error) {
-    console.log("error while Login" + error.message);
-    res.status(400).send("bad request");
+    // console.log("error while Login " + error.message);
+    res.status(401).send("Invalid Credentials");
   }
 });
 
