@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       validate(value) {
         if (!["male", "female", "others"].includes(value)) {
-          throw new Error("slect aprropriate gender");
+          throw new Error("Select appropriate gender");
         }
       },
     },
@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
     },
     about: {
       type: String,
-      default: "This is a system default about string",
+      default: "This is a system default about string ",
     },
     skills: {
       type: [String],
@@ -85,6 +85,5 @@ userSchema.methods.validatePassword = async function (PasswordInputByUser) {
   isPasswordValid = await bcrypt.compare(PasswordInputByUser, passwordHash);
   return isPasswordValid;
 };
-
 
 module.exports = mongoose.model("User", userSchema);

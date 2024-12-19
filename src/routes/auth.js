@@ -25,8 +25,12 @@ authRouter.post("/signup", async (req, res) => {
       emailId,
       password: passwordHash,
     });
-    await user.save();
-    res.send("user Saved sucessfully");
+    const userData = await user.save();
+    const generatejwtToken = await user.getJwt();
+    res.cookie("token", generatejwtToken, {
+      expires: new Date(Date.now() + 86400000),
+    });
+    res.json({ messsage: "user Saved sucessfully", data: userData });
   } catch (error) {
     console.log("error while signup" + error.message);
     res.status(400).send("bad request");
@@ -49,10 +53,10 @@ authRouter.post("/login", async (req, res) => {
       //create a jwt token
       const generatejwtToken = await user.getJwt();
 
-      console.log(generatejwtToken);
+      // console.log(generatejwtToken);
       // wrap jwt inside a cookie and send it
       res.cookie("token", generatejwtToken, {
-        expires: new Date(Date.now() + 900000),
+        expires: new Date(Date.now() + 86400000),
       });
 
       res.send(user);
