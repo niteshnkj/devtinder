@@ -8,7 +8,7 @@ var cookieParser = require("cookie-parser");
 //adding express.json() middleware to app level so that if json comes from anywhere it will convert that to js object
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://devpeer.netlify.app",
     credentials: true,
   })
 );

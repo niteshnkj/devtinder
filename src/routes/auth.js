@@ -10,7 +10,7 @@ const bcrypt = require("bcrypt");
 authRouter.post("/signup", async (req, res) => {
   try {
     //validate incoming requests
-    validateSignUpData(req);
+    validateSignUpData(req,res);
 
     const { firstName, lastName, emailId, password } = req.body;
     //encrypt passwords using bcrypt
@@ -29,6 +29,9 @@ authRouter.post("/signup", async (req, res) => {
     const generatejwtToken = await user.getJwt();
     res.cookie("token", generatejwtToken, {
       expires: new Date(Date.now() + 86400000),
+      secure: true,
+      sameSite: "none",
+      httpOnly: true,
     });
     res.json({ messsage: "user Saved sucessfully", data: userData });
   } catch (error) {
@@ -57,6 +60,9 @@ authRouter.post("/login", async (req, res) => {
       // wrap jwt inside a cookie and send it
       res.cookie("token", generatejwtToken, {
         expires: new Date(Date.now() + 86400000),
+        secure: true,
+        sameSite: "none",
+        httpOnly: true,
       });
 
       res.send(user);
@@ -76,6 +82,9 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/logout", (req, res) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
+    secure: true,
+    sameSite: "none",
+    httpOnly: true,
   });
 
   res.send("Logout sucessfull");

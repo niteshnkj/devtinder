@@ -8,17 +8,17 @@ const userAuth = async (req, res, next) => {
     const { token } = cookies;
 
     if (!token) {
-      return res.status(401).send("Please Login!!");
+      return res.status(401).json({ message: "Access Denied" });
     }
 
     //verify the token and extract id from that token
 
     const secretKey = await jwt.verify(token, "DEVtinder$435");
     if (!secretKey) {
-      throw new Error("Invalid Secret Key");
+      res.status(400).json({ message: "Invalid Token" });
     }
 
-    //if  token is valid the extract user and senfd user object as respose
+    //if  token is valid then extract user and send user object as respose
     const { _id } = secretKey;
     const user = await User.findById(_id);
     if (!user) {
